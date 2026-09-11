@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Powered Expense Tracker</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px #ccc;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 10px #ccc;
+        }
+
+        .card h2 {
+            margin: 5px 0;
+        }
+
+        input,
+        button {
+            padding: 11px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        input {
+            width: 200px;
+        }
+
+        button {
+            background: black;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #eeeeee;
+        }
+
+        a {
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .alert {
+            background: #ffe0e0;
+            border-left: 5px solid red;
+        }
+
+        .ai {
+            background: #e8f4ff;
+            border-left: 5px solid #2196f3;
+        }
+
+        .budget {
+            background: #f1f8e9;
+            border-left: 5px solid green;
+        }
+
+        .warning {
+            background: #ffe0e0;
+            border-left: 5px solid red;
+        }
+
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            color: gray;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#333;
+    color:white;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+">
+
+    <div>
+        <h1 style="margin:0;">
+            AI Powered Expense Tracker
+        </h1>
+
+        <p style="margin:5px 0 0;">
+            Welcome, {{ username }}
+        </p>
+    </div>
+
+    <a href="/logout"
+       style="
+       background:red;
+       color:white;
+       padding:10px 15px;
+       text-decoration:none;
+       border-radius:6px;
+       ">
+        Logout
+    </a>
+
+</div>
+
+
+    <!-- ================================================= -->
+    <!-- SUMMARY -->
+    <!-- ================================================= -->
+
+    <div class="summary">
+
+        <div class="card">
+
+            <h3>💰 Total Salary</h3>
+
+            <h2>
+                ₹{{ "%.2f"|format(total_salary) }}
+            </h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💸 Total Expense</h3>
+
+            <h2>
+                ₹{{ "%.2f"|format(total_expense) }}
+            </h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💵 Remaining Balance</h3>
+
+            <h2 class="balance">
+                ₹{{ "%.2f"|format(remaining_balance) }}
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- AI INFORMATION -->
+    <!-- ================================================= -->
+
+    <div class="box ai">
+
+        <h2>🤖 AI Automatic Categorization</h2>
+
+        <p>
+            This system uses rule-based AI to automatically
+            categorize your expenses.
+        </p>
+
+        <p>
+            Example:
+            <b>Pizza</b> → Food,
+            <b>Auto</b> → Travel,
+            <b>Shoes</b> → Shopping,
+            <b>Medicine</b> → Health
+        </p>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MONTHLY BUDGET -->
+    <!-- ================================================= -->
+
+    <div class="box budget">
+
+        <h2>📊 Monthly Budget</h2>
+
+        <p>
+            Current Month:
+            <b>{{ current_month }}</b>
+        </p>
+
+
+        <form action="/set_budget" method="POST">
+
+            <input
+                type="number"
+                name="budget_amount"
+                placeholder="Enter Monthly Budget"
+                min="1"
+                required
+            >
+
+            <button type="submit">
+                Set Budget
+            </button>
+
+        </form>
+
+
+        <hr>
+
+
+        <h3>
+            Monthly Budget:
+            ₹{{ "%.2f"|format(monthly_budget) }}
+        </h3>
+
+
+        <h3>
+            This Month Expense:
+            ₹{{ "%.2f"|format(monthly_expense) }}
+        </h3>
+
+
+        {% if monthly_budget == 0 %}
+
+            <p>
+                ⚠️ Please set your monthly budget.
+            </p>
+
+        {% elif monthly_expense > monthly_budget %}
+
+            <div class="warning">
+
+                <h3>
+                    ⚠️ Budget Exceeded!
+                </h3>
+
+                <p>
+                    You have exceeded your monthly budget by
+                    ₹{{ "%.2f"|format(-budget_remaining) }}
+                </p>
+
+            </div>
+
+        {% else %}
+
+            <p>
+                ✅ You are within your monthly budget.
+            </p>
+
+            <p>
+                💵 Budget Remaining:
+                <b>
+                    ₹{{ "%.2f"|format(budget_remaining) }}
+                </b>
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PAYMENT ALERT -->
+    <!-- ================================================= -->
+
+    {% for payment in payments %}
+
+        {% if payment.due_day == today %}
+
+            <div class="box alert">
+
+                ⚠️ <b>Payment Due Today!</b>
+
+                <br><br>
+
+                {{ payment.title }}
+
+                - ₹{{ payment.amount }}
+
+            </div>
+
+
+        {% elif payment.due_day > today
+              and payment.due_day - today <= 3 %}
+
+            <div class="box alert">
+
+                🔔 <b>Payment Alert!</b>
+
+                <br><br>
+
+                {{ payment.title }}
+
+                - ₹{{ payment.amount }}
+
+                <br>
+
+                Due in
+                {{ payment.due_day - today }}
+                day(s).
+
+            </div>
+
+        {% endif %}
+
+    {% endfor %}
+
+
+    <!-- ================================================= -->
+    <!-- ADD EXPENSE -->
+    <!-- ================================================= -->
+
+    <div class="box">
+
+        <h2>➕ Add Expense</h2>
+
+
+        <form action="/add" method="POST">
+
+            <input
+                type="text"
+                name="title"
+                placeholder="Expense name"
+                required
+            >
+
+
+            <input
+                type="number"
+                name="amount"
+                placeholder="Amount"
+                min="1"
+                required
+            >
+
+
+            <input
+                type="date"
+                name="expense_date"
+                required
+            >
+
+
+            <button type="submit">
+                Add Expense
+            </button>
+
+        </form>
+
+
+        <p>
+            🤖 Category will be detected automatically by AI.
+        </p>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- ADD SALARY -->
+    <!-- ================================================= -->
+
+    <div class="box">
+
+        <h2>💰 Add Salary</h2>
+
+
+        <form action="/add_salary" method="POST">
+
+            <input
+                type="text"
+                name="salary_title"
+                placeholder="Salary Name"
+                required
+            >
+
+
+            <input
+                type="number"
+                name="salary_amount"
+                placeholder="Salary Amount"
+                min="1"
+                required
+            >
+
+
+            <input
+                type="date"
+                name="salary_date"
+                required
+            >
+
+
+            <button type="submit">
+                Add Salary
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- SALARY HISTORY -->
+    <!-- ================================================= -->
+
+    <div class="box">
+
+        <h2>💰 Salary History</h2>
+
+
+        {% if salaries %}
+
+        <table>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Salary Name</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Action</th>
+
+            </tr>
+
+
+            {% for salary in salaries %}
+
+            <tr>
+
+                <td>
+                    {{ salary.id }}
+                </td>
+
+                <td>
+                    {{ salary.title }}
+                </td>
+
+                <td>
+                    ₹{{ salary.amount }}
+                </td>
+
+                <td>
+                    {{ salary.salary_date }}
+                </td>
+
+                <td>
+
+                    <a href="/delete_salary/{{ salary.id }}">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+
+        {% else %}
+
+            <p class="empty">
+                No salary record available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- ADD MONTHLY PAYMENT -->
+    <!-- ================================================= -->
+
+    <div class="box">
+
+        <h2>📅 Add Monthly Payment</h2>
+
+
+        <form action="/add_payment" method="POST">
+
+            <input
+                type="text"
+                name="payment_title"
+                placeholder="Payment name"
+                required
+            >
+
+
+            <input
+                type="number"
+                name="payment_amount"
+                placeholder="Amount"
+                min="1"
+                required
+            >
+
+
+            <input
+                type="number"
+                name="due_day"
+                placeholder="Due date (1-28)"
+                min="1"
+                max="28"
+                required
+            >
+
+
+            <button type="submit">
+                Add Monthly Payment
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MONTHLY PAYMENT HISTORY -->
+    <!-- ================================================= -->
+
+    <div class="box">
+
+        <h2>📅 Monthly Payments</h2>
+
+
+        {% if payments %}
+
+        <table>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Payment</th>
+                <th>Amount</th>
+                <th>Due Day</th>
+                <th>Action</th>
+
+            </tr>
+
+
+            {% for payment in payments %}
+
+            <tr>
+
+                <td>
+                    {{ payment.id }}
+                </td>
+
+                <td>
+                    {{ payment.title }}
+                </td>
+
+                <td>
+                    ₹{{ payment.amount }}
+                </td>
+
+                <td>
+                    {{ payment.due_day }} तारीख
+                </td>
+
+                <td>
+
+                    <a href="/delete_payment/{{ payment.id }}">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+
+        {% else %}
+
+            <p class="empty">
+                No monthly payment available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- EXPENSE HISTORY -->
+    <!-- ================================================= -->
+
+    <div class="box">
+
+        <h2>💸 Expense History</h2>
+
+
+        {% if expenses %}
+
+        <table>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Expense</th>
+                <th>Amount</th>
+                <th>AI Category</th>
+                <th>Date</th>
+                <th>Action</th>
+
+            </tr>
+
+
+            {% for expense in expenses %}
+
+            <tr>
+
+                <td>
+                    {{ expense.id }}
+                </td>
+
+                <td>
+                    {{ expense.title }}
+                </td>
+
+                <td>
+                    ₹{{ expense.amount }}
+                </td>
+
+                <td>
+                    🤖 {{ expense.category }}
+                </td>
+
+                <td>
+                    {{ expense.expense_date }}
+                </td>
+
+                <td>
+
+                    <a href="/delete/{{ expense.id }}">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+
+        {% else %}
+
+            <p class="empty">
+                No expense available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>
