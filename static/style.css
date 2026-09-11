@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 30px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.total {
+    background: #e8f5e9;
+    padding: 20px;
+    margin: 20px 0;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+input,
+select,
+button {
+    padding: 12px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+button {
+    cursor: pointer;
+    background: black;
+    color: white;
+}
+
+table {
+    width: 100%;
+    margin-top: 25px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
